@@ -2,6 +2,7 @@ import copy
 import time
 import sys
 from abc import ABC
+from turtle import distance
 from typing import Tuple, Union, Dict, List, Any
 import math
 import numpy as np
@@ -185,7 +186,15 @@ class SequentialSearch(SearchBaseClass, ABC):
         Enter your heuristic function h(x) calculation of distance from node_current to goal
         Returns the distance normalized to be comparable with cost function measurements
         """
-        distance = 0
+
+        node_center = self.get_node_information(node_current)
+        goal_node = self.get_goal_information()
+        
+        distance_x = abs(node_center[0] - goal_node[0])
+        distance_y = abs(node_center[1] - goal_node[1])
+
+        distance = (distance_x**2) + (distance_y**2)
+        
         return distance
 
     def evaluation_function(self, node_current):
@@ -194,8 +203,17 @@ class SequentialSearch(SearchBaseClass, ABC):
         """
         g = self.cost_function(node_current)
         h = self.heuristic_function(node_current)
-        f = g + h
+        w = 1
+        f = g + w*h
         return f
+
+
+    def a_star(self, node_current, f):
+    
+
+        return True
+
+
 
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
@@ -203,6 +221,8 @@ class SequentialSearch(SearchBaseClass, ABC):
         print(self.get_goal_information())
         print(self.get_node_information(node_initial))
         """Enter your code here"""
+        
+        #found_path = self.a_star(node_current = node_initial, f = evaluation_function(node_initial)
 
         return True
 

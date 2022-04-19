@@ -204,6 +204,8 @@ class SequentialSearch(SearchBaseClass, ABC):
         print(self.get_node_information(node_initial))
         """Enter your code here"""
 
+        
+
         return True
 
 

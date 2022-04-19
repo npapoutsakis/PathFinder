@@ -35,9 +35,9 @@ def main():
 
     # comment out the planners which you don't want to execute
     dict_motion_planners = {
-        0: (MotionPlanner.DepthFirstSearch, "Depth First Search"),
-        # 1: (MotionPlanner.Astar, "A* Search"),
-        # 2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
+        #0: (MotionPlanner.DepthFirstSearch, "Depth First Search"),
+        1: (MotionPlanner.Astar, "A* Search"),
+        #2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
     }
 
     for (class_planner, name_planner) in dict_motion_planners.values():
