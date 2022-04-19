@@ -5,6 +5,7 @@ from abc import ABC
 from turtle import distance
 from typing import Tuple, Union, Dict, List, Any
 import math
+from winreg import EnumValue
 import numpy as np
 
 from commonroad.scenario.trajectory import State
@@ -13,7 +14,7 @@ sys.path.append('../')
 from SMP.maneuver_automaton.motion_primitive import MotionPrimitive
 from SMP.motion_planner.node import Node, CostNode
 from SMP.motion_planner.plot_config import DefaultPlotConfig
-from SMP.motion_planner.queue import FIFOQueue, LIFOQueue
+from SMP.motion_planner.queue import FIFOQueue, LIFOQueue, PriorityQueue
 from SMP.motion_planner.search_algorithms.base_class import SearchBaseClass
 from SMP.motion_planner.utility import MotionPrimitiveStatus, initial_visualization, update_visualization
 
@@ -187,13 +188,14 @@ class SequentialSearch(SearchBaseClass, ABC):
         Returns the distance normalized to be comparable with cost function measurements
         """
 
+        #Euclidean Distance
         node_center = self.get_node_information(node_current)
         goal_node = self.get_goal_information()
         
         distance_x = abs(node_center[0] - goal_node[0])
         distance_y = abs(node_center[1] - goal_node[1])
 
-        distance = (distance_x**2) + (distance_y**2)
+        distance = math.sqrt((distance_x**2) + (distance_y**2))
         
         return distance
 
@@ -208,8 +210,46 @@ class SequentialSearch(SearchBaseClass, ABC):
         return f
 
 
-    def a_star(self, node_current, f):
-    
+    def a_star(self, node_current):
+
+        open_list = []
+        closed_list = []
+        
+        #We insert the first node in the open_list
+        open_list.append(node_current)
+
+        #Cost, Heur and Evaluation Functions calculated on node_current
+        g = self.cost_function(node_current)
+        h = self.heuristic_function(node_current)
+        f = self.evaluation_function(node_current)
+
+
+        while len(open_list) > 0:
+            # eval_func = []
+            # index = 0
+            
+            # for i in range(len(open_list)):
+            #     eval_func[0].append(self.evaluation_function(open_list[i]))
+            #     eval_func[1].append(index)
+            #     index = index + 1
+                
+
+            # print(eval_func)    
+            # #Lowent Evaluation Function    
+            # f = min(eval_func)
+            
+            #Node with the Lowest Eval Function
+            
+
+
+
+
+
+            break
+
+
+
+
 
         return True
 
@@ -217,14 +257,14 @@ class SequentialSearch(SearchBaseClass, ABC):
 
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
-        print(self.get_obstacles_information())
-        print(self.get_goal_information())
-        print(self.get_node_information(node_initial))
+        # print(self.get_obstacles_information())
+        # print(self.get_goal_information())
+        # print(self.get_node_information(node_initial))
         """Enter your code here"""
-        
-        #found_path = self.a_star(node_current = node_initial, f = evaluation_function(node_initial)
 
-        return True
+        self.a_star(node_current= node_initial)
+
+        return (None), {None, None, Any}
 
 
 class Astar(SequentialSearch):
