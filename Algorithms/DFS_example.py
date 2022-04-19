@@ -216,7 +216,7 @@ class SequentialSearch(SearchBaseClass, ABC):
             # if goal is reached, return back with the solution path
             if goal_flag:
                 return True
-
+            
             # if goal is not reached, continue the search recursive
             goal_found = self.recursive_DFS(node_current=child)
 

@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+from cmath import inf
 import copy
 import time
 import sys
@@ -14,7 +16,7 @@ sys.path.append('../')
 from SMP.maneuver_automaton.motion_primitive import MotionPrimitive
 from SMP.motion_planner.node import Node, CostNode
 from SMP.motion_planner.plot_config import DefaultPlotConfig
-from SMP.motion_planner.queue import FIFOQueue, LIFOQueue, PriorityQueue
+from SMP.motion_planner.queue import FIFOQueue, LIFOQueue, PriorityQueue, Queue
 from SMP.motion_planner.search_algorithms.base_class import SearchBaseClass
 from SMP.motion_planner.utility import MotionPrimitiveStatus, initial_visualization, update_visualization
 
@@ -212,35 +214,35 @@ class SequentialSearch(SearchBaseClass, ABC):
 
     def a_star(self, node_current):
 
-        open_list = []
-        closed_list = []
+        open_list = PriorityQueue()
+        closed_list = LIFOQueue()
         
         #We insert the first node in the open_list
-        open_list.append(node_current)
+        open_list.insert(node_current, self.evaluation_function(node_current))
 
         #Cost, Heur and Evaluation Functions calculated on node_current
         g = self.cost_function(node_current)
         h = self.heuristic_function(node_current)
         f = self.evaluation_function(node_current)
 
+        while not open_list.empty():
 
-        while len(open_list) > 0:
-            # eval_func = []
-            # index = 0
-            
-            # for i in range(len(open_list)):
-            #     eval_func[0].append(self.evaluation_function(open_list[i]))
-            #     eval_func[1].append(index)
-            #     index = index + 1
-                
-
-            # print(eval_func)    
-            # #Lowent Evaluation Function    
-            # f = min(eval_func)
-            
             #Node with the Lowest Eval Function
-            
+            node_lowest_f = open_list.pop()
+            print(self.get_node_information(node_lowest_f))
 
+            #Insert node on close list --> Visited!
+            closed_list.insert(node_lowest_f)
+
+            #For each successor on the lowest_eval_func_node
+            for successor in node_lowest_f.get_successors():
+
+                if self.goal_reached(successor, node_lowest_f):
+                    print("Goal Reached!")
+                    return True
+                print("OKKK")
+                
+                # successor_f = self.evaluation_function(successor)
 
 
 
