@@ -1,4 +1,5 @@
 import copy
+from fileinput import close
 import time
 import sys
 from abc import ABC
@@ -213,9 +214,7 @@ class SequentialSearch(SearchBaseClass, ABC):
         closed_list = []
         
         #We insert the first node in the open_list
-        open_list.insert(node_current, 0)
-        
-        print("Inserted init node")
+        open_list.insert(node_current, self.evaluation_function(node_current))
 
         while not open_list.empty():
             
@@ -226,6 +225,10 @@ class SequentialSearch(SearchBaseClass, ABC):
             for successor in node_lowest_f.get_successors():
                 
                 if self.goal_reached(successor, node_lowest_f):
+                    print("Visited Nodes Number: " + str(len(open_list.list_elements) + len(closed_list)))
+                    print("Path: " + str(self.get_node_path(node_lowest_f)))
+                    print("Heuristic Cost: " + str(self.heuristic_function(node_lowest_f)))
+                    print("Estimated Cost: "+ str(self.cost_function(node_lowest_f)))
                     print("Goal Reached!")
                     return True
 
@@ -239,16 +242,11 @@ class SequentialSearch(SearchBaseClass, ABC):
 
                 successor_eval_f = self.evaluation_function(child)
                 parent_eval_f = self.evaluation_function(node_lowest_f)
-
-                if successor_eval_f <= parent_eval_f:
-                    continue
-
-                elif successor_eval_f > parent_eval_f:
-                    open_list.insert(child, self.evaluation_function(child))
-
-            print(len(open_list.list_elements))
+            
+                open_list.insert(child, self.evaluation_function(child))
+            
             closed_list.append(node_lowest_f)
-        
+    
         print("WTF HAPPEND")
         return False
 
