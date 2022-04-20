@@ -1,13 +1,9 @@
-from asyncio.windows_events import NULL
-from cmath import inf
 import copy
 import time
 import sys
 from abc import ABC
-from turtle import distance
 from typing import Tuple, Union, Dict, List, Any
 import math
-from winreg import EnumValue
 import numpy as np
 
 from commonroad.scenario.trajectory import State
@@ -211,62 +207,60 @@ class SequentialSearch(SearchBaseClass, ABC):
         f = g + w*h
         return f
 
-
     def a_star(self, node_current):
 
         open_list = PriorityQueue()
-        closed_list = LIFOQueue()
+        closed_list = []
         
         #We insert the first node in the open_list
-        open_list.insert(node_current, self.evaluation_function(node_current))
-
-        #Cost, Heur and Evaluation Functions calculated on node_current
-        g = self.cost_function(node_current)
-        h = self.heuristic_function(node_current)
-        f = self.evaluation_function(node_current)
+        open_list.insert(node_current, 0)
+        
+        print("Inserted init node")
 
         while not open_list.empty():
-
+            
             #Node with the Lowest Eval Function
             node_lowest_f = open_list.pop()
-            print(self.get_node_information(node_lowest_f))
-
-            #Insert node on close list --> Visited!
-            closed_list.insert(node_lowest_f)
 
             #For each successor on the lowest_eval_func_node
             for successor in node_lowest_f.get_successors():
-
+                
                 if self.goal_reached(successor, node_lowest_f):
                     print("Goal Reached!")
                     return True
-                print("OKKK")
-                
-                # successor_f = self.evaluation_function(successor)
 
+                collision_flag, child = self.take_step(successor, node_lowest_f)
 
+                if collision_flag:
+                    continue
 
+                #At this point we've made all possibles steps and checked for goal or collisions
+                #To choose which child will be the next node, we must compare the eval_function of each successor
 
-            break
+                successor_eval_f = self.evaluation_function(child)
+                parent_eval_f = self.evaluation_function(node_lowest_f)
 
+                if successor_eval_f <= parent_eval_f:
+                    continue
 
+                elif successor_eval_f > parent_eval_f:
+                    open_list.insert(child, self.evaluation_function(child))
 
+            print(len(open_list.list_elements))
+            closed_list.append(node_lowest_f)
+        
+        print("WTF HAPPEND")
+        return False
 
-
-        return True
 
 
 
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
-        # print(self.get_obstacles_information())
-        # print(self.get_goal_information())
-        # print(self.get_node_information(node_initial))
-        """Enter your code here"""
+        
+        path = self.a_star(node_current= node_initial)
 
-        self.a_star(node_current= node_initial)
-
-        return (None), {None, None, Any}
+        return path
 
 
 class Astar(SequentialSearch):
