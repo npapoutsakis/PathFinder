@@ -1,5 +1,4 @@
 import copy
-from fileinput import close
 import time
 import sys
 from abc import ABC
@@ -198,65 +197,62 @@ class SequentialSearch(SearchBaseClass, ABC):
         
         return distance
 
-    def evaluation_function(self, node_current):
+    def evaluation_function(self, node_current, w):
         """
-        f(x) = g(x) + h(x)
+        f(x) = g(x) + w * h(x)
         """
         g = self.cost_function(node_current)
         h = self.heuristic_function(node_current)
-        w = 1
         f = g + w*h
         return f
 
-    def a_star(self, node_current):
-
+    def a_star(self, node_start, weight):
+        
+        #Not Visited
         open_list = PriorityQueue()
+        
+        #Visited
         closed_list = []
         
-        #We insert the first node in the open_list
-        open_list.insert(node_current, self.evaluation_function(node_current))
+        #We insert the start node in the open_list
+        open_list.insert(node_start, self.evaluation_function(node_start, weight))
 
         while not open_list.empty():
             
             #Node with the Lowest Eval Function
-            node_lowest_f = open_list.pop()
+            node_current = open_list.pop()
 
             #For each successor on the lowest_eval_func_node
-            for successor in node_lowest_f.get_successors():
-                
-                if self.goal_reached(successor, node_lowest_f):
-                    print("Visited Nodes Number: " + str(len(open_list.list_elements) + len(closed_list)))
-                    print("Path: " + str(self.get_node_path(node_lowest_f)))
-                    print("Heuristic Cost: " + str(self.heuristic_function(node_lowest_f)))
-                    print("Estimated Cost: "+ str(self.cost_function(node_lowest_f)))
+            for successor in node_current.get_successors():
+            
+                if self.goal_reached(successor, node_current):
+                    print("Visited Nodes Number: " +  str(len(closed_list)))
+                    # print("Path: " + str(self.get_node_path(node_current)))
+                    # print("Heuristic Cost: " + str(self.heuristic_function(node_current)))
+                    print("Estimated Cost: "+ str(self.cost_function(node_current)))
                     print("Goal Reached!")
                     return True
 
-                collision_flag, child = self.take_step(successor, node_lowest_f)
+                collision_flag, child = self.take_step(successor, node_current)
 
                 if collision_flag:
+                    #Means that we have checked a node and it collided with an obstacle, so nodes_visited++
+                    closed_list.append(child)
                     continue
-
-                #At this point we've made all possibles steps and checked for goal or collisions
-                #To choose which child will be the next node, we must compare the eval_function of each successor
-
-                successor_eval_f = self.evaluation_function(child)
-                parent_eval_f = self.evaluation_function(node_lowest_f)
+                
+                #Insert the child with in open_list -> pop() will get the lowest again
+                open_list.insert(child, self.evaluation_function(child, weight)) 
             
-                open_list.insert(child, self.evaluation_function(child))
-            
-            closed_list.append(node_lowest_f)
-    
-        print("WTF HAPPEND")
+            #We have visited the node -> move it to close list
+            closed_list.append(node_current)
+       
+        print("Search Failed!")
         return False
-
-
-
 
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
-        
-        path = self.a_star(node_current= node_initial)
+        w = 1
+        path = self.a_star(node_start= node_initial, weight= w)
 
         return path
 
@@ -265,7 +261,6 @@ class Astar(SequentialSearch):
     """
     Class for Astar Search algorithm.
     """
-
     def __init__(self, scenario, planningProblem, automaton, plot_config=DefaultPlotConfig):
         super().__init__(scenario=scenario, planningProblem=planningProblem, automaton=automaton,
                          plot_config=plot_config)
