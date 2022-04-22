@@ -241,6 +241,7 @@ class SequentialSearch(SearchBaseClass, ABC):
             
                 if self.goal_reached(successor, node_current):
                     f = open("output.txt", "a")
+                    f.write("A* (w = "+str(weight)+"):\n")
                     f.write("\tVisited Nodes Number: " + str(len(closed_list))+ "\n")
                     f.close()
                     self.convert_node_path(self.get_node_path(node_current))
@@ -272,10 +273,10 @@ class SequentialSearch(SearchBaseClass, ABC):
         print("Search Failed!")
         return False
 
-    def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
+    def execute_search(self, time_pause, weight) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
-        w = 1
-        path = self.a_star(node_start= node_initial, weight= w)
+
+        path = self.a_star(node_start= node_initial, weight= weight)
 
         return path
 

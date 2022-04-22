@@ -20,10 +20,17 @@ from SMP.motion_planner.plot_config import StudentScriptPlotConfig
 
 
 def main():
-    
+    weights = {
+        0: 1,
+        #1: 1.3,
+        # 2: 1.5,
+        # 3: 2,
+        # 4: 2.5,
+    }
+
     scenarios = { 
-         0: ('Scenarios/scenario1.xml'),
-        #1: ('Scenarios/scenario2.xml'),
+        0: ('Scenarios/scenario1.xml'),
+        1: ('Scenarios/scenario2.xml'),
         #2: ('Scenarios/scenario3.xml')
     }
     
@@ -49,10 +56,10 @@ def main():
         
         if path_scenario is scenarios.get(0):
             f = open("output.txt", "w")
+            f.write("=============================================\n")
         else:
             f = open("output.txt", "a")
-       
-        f.write("=============================================\n")
+            f.write("\n=============================================\n")
         f.write("Scenario Name: "+ path_scenario + "\n")
         f.close()
         
@@ -62,7 +69,8 @@ def main():
 
             # start search
             print(name_planner + " started..")
-            found_path = planner.execute_search(time_pause=0.01)
+            for w in weights.values():
+                found_path = planner.execute_search(time_pause=0.01, weight=w)
 
     print('Done')
 
