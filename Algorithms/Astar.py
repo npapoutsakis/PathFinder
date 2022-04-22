@@ -206,6 +206,20 @@ class SequentialSearch(SearchBaseClass, ABC):
         f = g + w*h
         return f
 
+    def convert_node_path(self, path):
+        list = []
+        for item in path:
+            list.append(item.tolist())
+        
+        f = open("output.txt", "a")
+        f.write("\tPath: ")
+        for node in list:
+            f.write("(" + str(node[0]) + ", " + str(node[1]) + ")") 
+            f.write("->")
+        f.write("\n")
+        f.close()
+        return
+
     def a_star(self, node_start, weight):
         
         #Not Visited
@@ -226,11 +240,16 @@ class SequentialSearch(SearchBaseClass, ABC):
             for successor in node_current.get_successors():
             
                 if self.goal_reached(successor, node_current):
-                    print("Visited Nodes Number: " +  str(len(closed_list)))
-                    # print("Path: " + str(self.get_node_path(node_current)))
-                    # print("Heuristic Cost: " + str(self.heuristic_function(node_current)))
-                    print("Estimated Cost: "+ str(self.cost_function(node_current)))
-                    print("Goal Reached!")
+                    f = open("output.txt", "a")
+                    f.write("\tVisited Nodes Number: " + str(len(closed_list))+ "\n")
+                    f.close()
+                    self.convert_node_path(self.get_node_path(node_current))
+                    f = open("output.txt", "a")
+                    # f.write("Path: " + str(self.convert_node_path(self.get_node_path(node_current)))+ "\n")
+                    f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
+                    f.write("\tEstimated Cost: "+ str(self.cost_function(node_current)) + "\n")
+                    f.close()
+                    
                     return True
 
                 collision_flag, child = self.take_step(successor, node_current)
@@ -239,7 +258,11 @@ class SequentialSearch(SearchBaseClass, ABC):
                     #Means that we have checked a node and it collided with an obstacle, so nodes_visited++
                     closed_list.append(child)
                     continue
-                
+
+                #If child is already in close_list, just ignore it
+                if child in closed_list:
+                    continue
+
                 #Insert the child with in open_list -> pop() will get the lowest again
                 open_list.insert(child, self.evaluation_function(child, weight)) 
             

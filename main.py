@@ -46,17 +46,25 @@ def main():
             1: (MotionPlanner.Astar, "A* Search"),
             #2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
         }
-
-        print("Scenario Name: "+ path_scenario)
+        
+        if path_scenario is scenarios.get(0):
+            f = open("output.txt", "w")
+        else:
+            f = open("output.txt", "a")
+       
+        f.write("=============================================\n")
+        f.write("Scenario Name: "+ path_scenario + "\n")
+        f.close()
+        
         for (class_planner, name_planner) in dict_motion_planners.values():
             planner = class_planner(scenario=scenario, planning_problem=planning_problem,
                                     automaton=automaton, plot_config=config_plot)
 
             # start search
-            # print(name_planner + " started..")
+            print(name_planner + " started..")
             found_path = planner.execute_search(time_pause=0.01)
 
-print('Done')
+    print('Done')
 
 if __name__ == '__main__':
     main()
