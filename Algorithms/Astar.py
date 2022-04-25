@@ -209,6 +209,7 @@ class SequentialSearch(SearchBaseClass, ABC):
         f = g + w*h
         return f
 
+    #Writes in the form (x,y)->(x1,y1)->(x2,y2) the path of node
     def convert_node_path(self, path):
         list = []
         for item in path:
@@ -218,11 +219,13 @@ class SequentialSearch(SearchBaseClass, ABC):
         f.write("\tPath: ")
         for node in list:
             f.write("(" + str(node[0]) + ", " + str(node[1]) + ")") 
-            f.write("->")
+            if node != list[-1]:
+                f.write("->")
         f.write("\n")
         f.close()
         return
 
+    #Function that converts the PriorityQueue into a list
     def queueToList(self, theQueue):
         list = []
         
@@ -231,7 +234,8 @@ class SequentialSearch(SearchBaseClass, ABC):
   
         return list
 
-    
+    #Find the given node on the list and return it
+    #Otherwise return None
     def find(self, list, the_node):
         for node in list:
             if node == the_node:
@@ -240,6 +244,7 @@ class SequentialSearch(SearchBaseClass, ABC):
                 node = None
         return node
 
+    #A* algorithm implementation
     def a_star(self, node_start, weight):
         
         #Not Visited
@@ -305,9 +310,11 @@ class SequentialSearch(SearchBaseClass, ABC):
                     child_new_f = self.evaluation_function(child ,weight)
                     child_old_f = self.evaluation_function(existing_node, weight)
 
+                    #If the new child has bigger f, remove the child from his parent
                     if child_new_f >= child_old_f:
                         parent.get_succesors().remove(successor)
                     
+                    #Else if it exists and the new child has lower f, find the existing node, and replace it
                     elif list == "open":
                         open_list.list_elements.remove(existing_node)
                         open_list.insert(child, self.evaluation_function(child, weight))
