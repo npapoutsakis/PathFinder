@@ -29,7 +29,7 @@ def main():
     }
 
     scenarios = { 
-        0: ('Scenarios/scenario1.xml'),
+        #0: ('Scenarios/scenario1.xml'),
         1: ('Scenarios/scenario2.xml'),
         #2: ('Scenarios/scenario3.xml')
     }
@@ -54,7 +54,7 @@ def main():
             #2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
         }
         
-        if path_scenario is scenarios.get(0):
+        if path_scenario is scenarios.get(0) or len(scenarios) == 1:
             f = open("output.txt", "w")
             f.write("=============================================\n")
         else:

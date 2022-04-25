@@ -193,6 +193,9 @@ class SequentialSearch(SearchBaseClass, ABC):
         distance_x = abs(node_center[0] - goal_node[0])
         distance_y = abs(node_center[1] - goal_node[1])
 
+        #Manhattan Distance
+        #distance = distance_x + distance_y
+
         distance = math.sqrt((distance_x**2) + (distance_y**2))
         
         return distance
@@ -220,6 +223,24 @@ class SequentialSearch(SearchBaseClass, ABC):
         f.close()
         return
 
+    def queueToList(self, theQueue):
+        list = []
+        
+        for element in theQueue.list_elements:
+            list.append(element[2])
+  
+        return list
+
+    def find(self, list, the_node):
+
+        for node in list:
+            if node == the_node:
+                break
+            else:
+                node = None
+
+        return node
+
     def a_star(self, node_start, weight):
         
         #Not Visited
@@ -236,9 +257,17 @@ class SequentialSearch(SearchBaseClass, ABC):
             #Node with the Lowest Eval Function
             node_current = open_list.pop()
 
+            #We have visited the node -> move it to close list
+            closed_list.append(node_current)
+            
+            open_node_list = self.queueToList(open_list)
+            
             #For each successor on the lowest_eval_func_node
             for successor in node_current.get_successors():
-            
+                
+                #Store the parent
+                parent = node_current
+
                 if self.goal_reached(successor, node_current):
                     f = open("output.txt", "a")
                     f.write("A* (w = "+str(weight)+"):\n")
@@ -250,26 +279,47 @@ class SequentialSearch(SearchBaseClass, ABC):
                     f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
                     f.write("\tEstimated Cost: "+ str(self.cost_function(node_current)) + "\n")
                     f.close()
-                    
                     return True
 
                 collision_flag, child = self.take_step(successor, node_current)
 
+                #Means that we have checked a node and it collided with an obstacle, so nodes_visited++
                 if collision_flag:
-                    #Means that we have checked a node and it collided with an obstacle, so nodes_visited++
-                    closed_list.append(child)
                     continue
-
-                #If child is already in close_list, just ignore it
-                if child in closed_list:
-                    continue
-
+                
                 #Insert the child with in open_list -> pop() will get the lowest again
-                open_list.insert(child, self.evaluation_function(child, weight)) 
-            
-            #We have visited the node -> move it to close list
-            closed_list.append(node_current)
-       
+                if child not in open_node_list and child not in closed_list:
+                    open_list.insert(child, self.evaluation_function(child, weight))
+                    open_node_list = self.queueToList(open_list)
+
+                
+                #if child exists in the lists, we have to check the new f and compare it with the old one.
+                elif child in open_node_list or child in closed_list:
+                    print("HAHAHA")
+                    existing_node = self.find(open_node_list, child)
+                    list = "open"
+
+                    if existing_node == None:
+                        existing_node = self.find(closed_list, child)
+                        list = "close"
+
+                    child_new_f = self.evaluation_function(child ,weight)
+                    child_old_f = self.evaluation_function(existing_node, weight)
+
+                    if child_new_f >= child_old_f:
+                        parent.get_succesors().remove(successor)
+                    
+                    elif list == "open":
+                        open_list.list_elements.remove(existing_node)
+                        open_list.insert(child, self.evaluation_function(child, weight))
+                        open_node_list = self.queueToList(open_list)
+
+                    else:
+                        print("HAHA")
+                        closed_list.remove(existing_node)
+                        open_list.insert(child, self.evaluation_function(child, weight))
+                        open_node_list = self.queueToList(open_list)                        
+
         print("Search Failed!")
         return False
 
