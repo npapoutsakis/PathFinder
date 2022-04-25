@@ -1,2 +1,3 @@
-PathFinder/Figures/
-*.svg
+# ignore files
+/Figures/*.svg
+.idea
