@@ -231,14 +231,13 @@ class SequentialSearch(SearchBaseClass, ABC):
   
         return list
 
+    
     def find(self, list, the_node):
-
         for node in list:
             if node == the_node:
                 break
             else:
                 node = None
-
         return node
 
     def a_star(self, node_start, weight):
