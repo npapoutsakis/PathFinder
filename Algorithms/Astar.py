@@ -314,7 +314,6 @@ class SequentialSearch(SearchBaseClass, ABC):
                         open_node_list = self.queueToList(open_list)
 
                     else:
-                        print("HAHA")
                         closed_list.remove(existing_node)
                         open_list.insert(child, self.evaluation_function(child, weight))
                         open_node_list = self.queueToList(open_list)                        
