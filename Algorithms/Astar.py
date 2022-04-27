@@ -186,15 +186,15 @@ class SequentialSearch(SearchBaseClass, ABC):
         Returns the distance normalized to be comparable with cost function measurements
         """
 
-        #Euclidean Distance
+        # Euclidean Distance
         node_center = self.get_node_information(node_current)
         goal_node = self.get_goal_information()
         
         distance_x = abs(node_center[0] - goal_node[0])
         distance_y = abs(node_center[1] - goal_node[1])
 
-        #Manhattan Distance
-        #distance = distance_x + distance_y
+        # Manhattan Distance
+        # distance = distance_x + distance_y
 
         distance = math.sqrt((distance_x**2) + (distance_y**2))
         
@@ -209,23 +209,21 @@ class SequentialSearch(SearchBaseClass, ABC):
         f = g + w*h
         return f
 
-    #Writes in the form (x,y)->(x1,y1)->(x2,y2) the path of node
-    def convert_node_path(self, path):
+    # Writes in the form (x,y)->(x1,y1)->(x2,y2) the path of node
+    def convert_node_path_to_string(self, path):
         list = []
         for item in path:
             list.append(item.tolist())
-        
-        f = open("output.txt", "a")
-        f.write("\tPath: ")
-        for node in list:
-            f.write("(" + str(node[0]) + ", " + str(node[1]) + ")") 
-            if node != list[-1]:
-                f.write("->")
-        f.write("\n")
-        f.close()
-        return
 
-    #Function that converts the PriorityQueue into a list
+        path_string = ""
+        for node in list:
+            path_string += f"({str(node[0])}, {str(node[1])})"
+            if node != list[-1]:
+                path_string += "->"
+
+        return path_string
+
+    # Function that converts the PriorityQueue into a list
     def queueToList(self, theQueue):
         list = []
         
@@ -234,8 +232,8 @@ class SequentialSearch(SearchBaseClass, ABC):
   
         return list
 
-    #Find the given node on the list and return it
-    #Otherwise return None
+    # Find the given node on the list and return it
+    # Otherwise return None
     def find(self, list, the_node):
         for node in list:
             if node == the_node:
@@ -244,60 +242,57 @@ class SequentialSearch(SearchBaseClass, ABC):
                 node = None
         return node
 
-    #A* algorithm implementation
+    # A* algorithm implementation
     def a_star(self, node_start, weight):
         
-        #Not Visited
+        # Not Visited
         open_list = PriorityQueue()
         
-        #Visited
+        # Visited
         closed_list = []
         
-        #We insert the start node in the open_list
+        # We insert the start node in the open_list
         open_list.insert(node_start, self.evaluation_function(node_start, weight))
 
         while not open_list.empty():
             
-            #Node with the Lowest Eval Function
+            # Node with the Lowest Eval Function
             node_current = open_list.pop()
 
-            #We have visited the node -> move it to close list
+            # We have visited the node -> move it to close list
             closed_list.append(node_current)
             
             open_node_list = self.queueToList(open_list)
             
-            #For each successor on the lowest_eval_func_node
+            # For each successor on the lowest_eval_func_node
             for successor in node_current.get_successors():
                 
-                #Store the parent
+                # Store the parent
                 parent = node_current
 
                 if self.goal_reached(successor, node_current):
                     f = open("output.txt", "a")
                     f.write("A* (w = "+str(weight)+"):\n")
                     f.write("\tVisited Nodes Number: " + str(len(closed_list))+ "\n")
-                    f.close()
-                    self.convert_node_path(self.get_node_path(node_current))
-                    f = open("output.txt", "a")
-                    # f.write("Path: " + str(self.convert_node_path(self.get_node_path(node_current)))+ "\n")
+                    f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
                     f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
-                    f.write("\tEstimated Cost: "+ str(self.cost_function(node_current)) + "\n")
+                    f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
                     f.close()
                     return True
 
                 collision_flag, child = self.take_step(successor, node_current)
 
-                #Means that we have checked a node and it collided with an obstacle, so nodes_visited++
+                # Means that we have checked a node, and it collided with an obstacle, so nodes_visited++
                 if collision_flag:
                     continue
                 
-                #Insert the child with in open_list -> pop() will get the lowest again
+                # Insert the child with in open_list -> pop() will get the lowest again
                 if child not in open_node_list and child not in closed_list:
                     open_list.insert(child, self.evaluation_function(child, weight))
                     open_node_list = self.queueToList(open_list)
 
                 
-                #if child exists in the lists, we have to check the new f and compare it with the old one.
+                # if child exists in the lists, we have to check the new f and compare it with the old one
                 elif child in open_node_list or child in closed_list:
                     print("HAHAHA")
                     existing_node = self.find(open_node_list, child)
@@ -310,11 +305,11 @@ class SequentialSearch(SearchBaseClass, ABC):
                     child_new_f = self.evaluation_function(child ,weight)
                     child_old_f = self.evaluation_function(existing_node, weight)
 
-                    #If the new child has bigger f, remove the child from his parent
+                    # If the new child has bigger f, remove the child from his parent
                     if child_new_f >= child_old_f:
                         parent.get_succesors().remove(successor)
                     
-                    #Else if it exists and the new child has lower f, find the existing node, and replace it
+                    # Else if it exists and the new child has lower f, find the existing node, and replace it
                     elif list == "open":
                         open_list.list_elements.remove(existing_node)
                         open_list.insert(child, self.evaluation_function(child, weight))
