@@ -248,32 +248,59 @@ class SequentialSearch(SearchBaseClass, ABC):
         frontier = PriorityQueue()
 
         # Insert initial node at frontier
-        frontier.insert(self, node_start, self.evaluation_function(self, node_start))
+        frontier.insert(node_start, self.evaluation_function(node_start))
 
         # Number of visited nodes
-        visited_nodes = 1
+        visited_nodes = 0
 
         while not frontier.empty():
 
-            # Pop node with the lowest cost from frontier
+            # Pop node with the lowest cost from frontier,
             node_current = frontier.pop()
+
+            # Set new evaluation limit for algorithm
+            limit = self.evaluation_function(node_current)
+
+            # popped node = visited node
             visited_nodes += 1
 
-            # frontier_list = self.queue_to_list(frontier)
+            if self.ida_star_search(node=node_current, frontier=frontier, limit=limit):
+                f = open("output.txt", "a")
+                f.write("IDA*:\n")
+                f.write("\tVisited Nodes Number: " + str(visited_nodes) + "\n")
+                f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
+                f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
+                f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
+                f.close()
+                return True
 
-            for successor in node_current.get_successors():
-                if self.goal_reached(successor, node_current):
-                    f = open("output.txt", "a")
-                    f.write("IDA*:\n")
-                    f.write("\tVisited Nodes Number: " + visited_nodes + "\n")
-                    f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
-                    f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
-                    f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
-                    f.close()
-                    return True
+        # In case of failure to find goal
+        return False
 
-                frontier.insert(self, successor, self.evaluation_function(self, successor))
+    # Iterative deepening search algorithm, will return True only if goal node is found
+    def ida_star_search(self, node, frontier, limit):
+        for successor in node.get_successors():
+            # If goal reached return true to end search
+            if self.goal_reached(successor, node):
+                return True
 
+            # Check successor node
+            collision_flag, child = self.take_step(successor, node)
+
+            # If collision, check next successor
+            if collision_flag:
+                continue
+            # Get evaluation of visited node to compare with current limit
+            child_eval = self.evaluation_function(child)
+
+            # If child's evaluation surpasses the current limit, insert child at frontier
+            if child_eval > limit:
+                frontier.insert(child, child_eval)
+            # Else, if child's evaluation is within the limit, continue iterative deepening search and return result
+            else:
+                return self.ida_star_search(self, child, frontier, limit)
+
+        # In case recursive search does
         return False
 
 
