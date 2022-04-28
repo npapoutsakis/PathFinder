@@ -69,11 +69,11 @@ def main():
 
             # start search
             print(name_planner + " started..")
-            if name_planner == "Iterative Deepening A* Search":
-                found_path = planner.execute_search(time_pause=0.01)
-            else:
+            if name_planner == "A* Search":
                 for w in weights.values():
                     found_path = planner.execute_search(time_pause=0.01, weight=w)
+            else:
+                found_path = planner.execute_search(time_pause=0.01)
 
     print('Done')
 
