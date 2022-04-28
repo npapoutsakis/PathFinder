@@ -194,9 +194,9 @@ class SequentialSearch(SearchBaseClass, ABC):
         distance_y = abs(node_center[1] - goal_node[1])
 
         # Manhattan Distance
-        # distance = distance_x + distance_y
+        distance = distance_x + distance_y
 
-        distance = math.sqrt((distance_x ** 2) + (distance_y ** 2))
+        # distance = math.sqrt((distance_x ** 2) + (distance_y ** 2))
 
         return distance
 
@@ -298,7 +298,7 @@ class SequentialSearch(SearchBaseClass, ABC):
                 frontier.insert(child, child_eval)
             # Else, if child's evaluation is within the limit, continue iterative deepening search and return result
             else:
-                return self.ida_star_search(self, child, frontier, limit)
+                return self.ida_star_search(child, frontier, limit)
 
         # In case recursive search does
         return False

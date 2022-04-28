@@ -29,7 +29,7 @@ def main():
     }
 
     scenarios = { 
-        # 0: ('Scenarios/scenario1.xml'),
+        0: ('Scenarios/scenario1.xml'),
         1: ('Scenarios/scenario2.xml'),
         # 2: ('Scenarios/scenario3.xml')
     }
@@ -50,7 +50,7 @@ def main():
         # comment out the planners which you don't want to execute
         dict_motion_planners = {
             # 0: (MotionPlanner.DepthFirstSearch, "Depth First Search"),
-            # 1: (MotionPlanner.Astar, "A* Search"),
+            1: (MotionPlanner.Astar, "A* Search"),
             2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
         }
         
