@@ -30,7 +30,7 @@ def main():
 
     scenarios = { 
         0: ('Scenarios/scenario1.xml'),
-        1: ('Scenarios/scenario2.xml'),
+        # 1: ('Scenarios/scenario2.xml'),
         # 2: ('Scenarios/scenario3.xml')
     }
     
