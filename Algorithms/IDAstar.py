@@ -12,7 +12,7 @@ sys.path.append('../')
 from SMP.maneuver_automaton.motion_primitive import MotionPrimitive
 from SMP.motion_planner.node import Node, CostNode
 from SMP.motion_planner.plot_config import DefaultPlotConfig
-from SMP.motion_planner.queue import FIFOQueue, LIFOQueue
+from SMP.motion_planner.queue import FIFOQueue, LIFOQueue, PriorityQueue
 from SMP.motion_planner.search_algorithms.base_class import SearchBaseClass
 from SMP.motion_planner.utility import MotionPrimitiveStatus, initial_visualization, update_visualization
 
@@ -180,33 +180,108 @@ class SequentialSearch(SearchBaseClass, ABC):
         
         return cost
 
-    def heuristic_function(self, node_current):
+    def heuristic_function(self, node):
         """
         Enter your heuristic function h(x) calculation of distance from node_current to goal
         Returns the distance normalized to be comparable with cost function measurements
         """
-        distance = 0
+
+        # Euclidean Distance
+        node_center = self.get_node_information(node)
+        goal_node = self.get_goal_information()
+
+        distance_x = abs(node_center[0] - goal_node[0])
+        distance_y = abs(node_center[1] - goal_node[1])
+
+        # Manhattan Distance
+        # distance = distance_x + distance_y
+
+        distance = math.sqrt((distance_x ** 2) + (distance_y ** 2))
+
         return distance
 
-    def evaluation_function(self, node_current):
+    def evaluation_function(self, node):
         """
         f(x) = g(x) + h(x)
         """
-        g = self.cost_function(node_current)
-        h = self.heuristic_function(node_current)
+        g = self.cost_function(node)
+        h = self.heuristic_function(node)
         f = g + h
         return f
 
+    # Writes in the form (x,y)->(x1,y1)->(x2,y2) the path of node
+    def convert_node_path_to_string(self, path):
+        list = []
+        for item in path:
+            list.append(item.tolist())
+
+        path_string = ""
+        for node in list:
+            path_string += f"({str(node[0])}, {str(node[1])})"
+            if node != list[-1]:
+                path_string += "->"
+
+        return path_string
+
+    # Function that converts the PriorityQueue into a list
+    def queue_to_list(self, queue):
+        list = []
+
+        for element in queue.list_elements:
+            list.append(element[2])
+
+        return list
+
+    # Find the given node on the list and return it
+    # Otherwise return None
+    def find(self, list, the_node):
+        for node in list:
+            if node == the_node:
+                break
+            else:
+                node = None
+        return node
+
+    def ida_star(self, node_start):
+
+        # Frontier is a priority queue since cost matters
+        frontier = PriorityQueue()
+
+        # Insert initial node at frontier
+        frontier.insert(self, node_start, self.evaluation_function(self, node_start))
+
+        # Number of visited nodes
+        visited_nodes = 1
+
+        while not frontier.empty():
+
+            # Pop node with the lowest cost from frontier
+            node_current = frontier.pop()
+            visited_nodes += 1
+
+            # frontier_list = self.queue_to_list(frontier)
+
+            for successor in node_current.get_successors():
+                if self.goal_reached(successor, node_current):
+                    f = open("output.txt", "a")
+                    f.write("IDA*:\n")
+                    f.write("\tVisited Nodes Number: " + visited_nodes + "\n")
+                    f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
+                    f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
+                    f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
+                    f.close()
+                    return True
+
+                frontier.insert(self, successor, self.evaluation_function(self, successor))
+
+        return False
+
+
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
-        print(self.get_obstacles_information())
-        print(self.get_goal_information())
-        print(self.get_node_information(node_initial))
-        """Enter your code here"""
+        success = self.ida_star(node_start=node_initial)
 
-        
-
-        return True
+        return success
 
 
 class IterativeDeepeningAstar(SequentialSearch):

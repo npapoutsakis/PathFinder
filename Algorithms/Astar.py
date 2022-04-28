@@ -224,10 +224,10 @@ class SequentialSearch(SearchBaseClass, ABC):
         return path_string
 
     # Function that converts the PriorityQueue into a list
-    def queueToList(self, theQueue):
+    def queue_to_list(self, queue):
         list = []
         
-        for element in theQueue.list_elements:
+        for element in queue.list_elements:
             list.append(element[2])
   
         return list
@@ -262,7 +262,7 @@ class SequentialSearch(SearchBaseClass, ABC):
             # We have visited the node -> move it to close list
             closed_list.append(node_current)
             
-            open_node_list = self.queueToList(open_list)
+            open_node_list = self.queue_to_list(open_list)
             
             # For each successor on the lowest_eval_func_node
             for successor in node_current.get_successors():
@@ -289,7 +289,7 @@ class SequentialSearch(SearchBaseClass, ABC):
                 # Insert the child with in open_list -> pop() will get the lowest again
                 if child not in open_node_list and child not in closed_list:
                     open_list.insert(child, self.evaluation_function(child, weight))
-                    open_node_list = self.queueToList(open_list)
+                    open_node_list = self.queue_to_list(open_list)
 
                 
                 # if child exists in the lists, we have to check the new f and compare it with the old one
@@ -302,7 +302,7 @@ class SequentialSearch(SearchBaseClass, ABC):
                         existing_node = self.find(closed_list, child)
                         list = "close"
 
-                    child_new_f = self.evaluation_function(child ,weight)
+                    child_new_f = self.evaluation_function(child, weight)
                     child_old_f = self.evaluation_function(existing_node, weight)
 
                     # If the new child has bigger f, remove the child from his parent
@@ -313,12 +313,12 @@ class SequentialSearch(SearchBaseClass, ABC):
                     elif list == "open":
                         open_list.list_elements.remove(existing_node)
                         open_list.insert(child, self.evaluation_function(child, weight))
-                        open_node_list = self.queueToList(open_list)
+                        open_node_list = self.queue_to_list(open_list)
 
                     else:
                         closed_list.remove(existing_node)
                         open_list.insert(child, self.evaluation_function(child, weight))
-                        open_node_list = self.queueToList(open_list)                        
+                        open_node_list = self.queue_to_list(open_list)
 
         print("Search Failed!")
         return False
@@ -326,9 +326,7 @@ class SequentialSearch(SearchBaseClass, ABC):
     def execute_search(self, time_pause, weight) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
 
-        path = self.a_star(node_start= node_initial, weight= weight)
-
-        return path
+        return self.a_star(node_start= node_initial, weight= weight)
 
 
 class Astar(SequentialSearch):
