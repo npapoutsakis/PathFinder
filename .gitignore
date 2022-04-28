@@ -1,3 +1,4 @@
 # ignore files
 .idea
 output.txt
+*.pyc
