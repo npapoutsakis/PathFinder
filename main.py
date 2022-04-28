@@ -29,9 +29,9 @@ def main():
     }
 
     scenarios = { 
-        0: ('Scenarios/scenario1.xml'),
+        #0: ('Scenarios/scenario1.xml'),
         1: ('Scenarios/scenario2.xml'),
-        2: ('Scenarios/scenario3.xml')
+        #2: ('Scenarios/scenario3.xml')
     }
     
     for path_scenario in scenarios.values():
@@ -50,7 +50,7 @@ def main():
         # comment out the planners which you don't want to execute
         dict_motion_planners = {
             # 0: (MotionPlanner.DepthFirstSearch, "Depth First Search"),
-            # 1: (MotionPlanner.Astar, "A* Search"),
+            #1: (MotionPlanner.Astar, "A* Search"),
             2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
         }
         
@@ -69,8 +69,11 @@ def main():
 
             # start search
             print(name_planner + " started..")
-            # for w in weights.values():
-            found_path = planner.execute_search(time_pause=0.01)
+            if name_planner == "Iterative Deepening A* Search":
+                found_path = planner.execute_search(time_pause=0.01)
+            else:
+                for w in weights.values():
+                    found_path = planner.execute_search(time_pause=0.01, weight = w)
 
     print('Done')
 

@@ -306,9 +306,8 @@ class SequentialSearch(SearchBaseClass, ABC):
 
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
-        success = self.ida_star(node_start=node_initial)
-
-        return success
+    
+        return self.ida_star(node_start=node_initial)
 
 
 class IterativeDeepeningAstar(SequentialSearch):
