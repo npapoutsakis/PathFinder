@@ -22,16 +22,16 @@ from SMP.motion_planner.plot_config import StudentScriptPlotConfig
 def main():
     weights = {
         0: 1,
-        #1: 1.3,
+        # 1: 1.3,
         # 2: 1.5,
         # 3: 2,
         # 4: 2.5,
     }
 
     scenarios = { 
-        #0: ('Scenarios/scenario1.xml'),
+        # 0: ('Scenarios/scenario1.xml'),
         1: ('Scenarios/scenario2.xml'),
-        #2: ('Scenarios/scenario3.xml')
+        # 2: ('Scenarios/scenario3.xml')
     }
     
     for path_scenario in scenarios.values():
@@ -50,7 +50,7 @@ def main():
         # comment out the planners which you don't want to execute
         dict_motion_planners = {
             # 0: (MotionPlanner.DepthFirstSearch, "Depth First Search"),
-            #1: (MotionPlanner.Astar, "A* Search"),
+            # 1: (MotionPlanner.Astar, "A* Search"),
             2: (MotionPlanner.IterativeDeepeningAstar, "Iterative Deepening A* Search")
         }
         
@@ -60,7 +60,7 @@ def main():
         else:
             f = open("output.txt", "a")
             f.write("\n=============================================\n")
-        f.write("Scenario Name: "+ path_scenario + "\n")
+        f.write("Scenario Name: " + path_scenario + "\n")
         f.close()
         
         for (class_planner, name_planner) in dict_motion_planners.values():
@@ -73,7 +73,7 @@ def main():
                 found_path = planner.execute_search(time_pause=0.01)
             else:
                 for w in weights.values():
-                    found_path = planner.execute_search(time_pause=0.01, weight = w)
+                    found_path = planner.execute_search(time_pause=0.01, weight=w)
 
     print('Done')
 

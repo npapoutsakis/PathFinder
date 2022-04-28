@@ -273,7 +273,7 @@ class SequentialSearch(SearchBaseClass, ABC):
                 if self.goal_reached(successor, node_current):
                     f = open("output.txt", "a")
                     f.write("A* (w = "+str(weight)+"):\n")
-                    f.write("\tVisited Nodes Number: " + str(len(closed_list))+ "\n")
+                    f.write("\tVisited Nodes Number: " + str(len(self.visited_nodes))+ "\n")
                     f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
                     f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
                     f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
@@ -294,7 +294,6 @@ class SequentialSearch(SearchBaseClass, ABC):
                 
                 # if child exists in the lists, we have to check the new f and compare it with the old one
                 elif child in open_node_list or child in closed_list:
-                    print("HAHAHA")
                     existing_node = self.find(open_node_list, child)
                     list = "open"
 
