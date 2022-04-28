@@ -1,4 +1,6 @@
 # ignore files
+!/.gitignore
 .idea
 output.txt
 *.pyc
+__pycache__/
