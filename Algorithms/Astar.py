@@ -275,7 +275,7 @@ class SequentialSearch(SearchBaseClass, ABC):
                     f.write("A* (w = "+str(weight)+"):\n")
                     f.write("\tVisited Nodes Number: " + str(len(self.visited_nodes))+ "\n")
                     f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
-                    f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
+                    f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_start)) + "\n")
                     f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
                     f.close()
                     return True

@@ -38,6 +38,9 @@ class SequentialSearch(SearchBaseClass, ABC):
         self.time_pause = time_pause
         self.visited_nodes = []
 
+        # Frontier is a priority queue since cost matters
+        self.frontier = PriorityQueue()
+
         # first node
         if cost:
             node_initial = CostNode(list_paths=[[self.state_initial]],
@@ -223,53 +226,25 @@ class SequentialSearch(SearchBaseClass, ABC):
 
         return path_string
 
-    # Function that converts the PriorityQueue into a list
-    def queue_to_list(self, queue):
-        list = []
-
-        for element in queue.list_elements:
-            list.append(element[2])
-
-        return list
-
-    # Find the given node on the list and return it
-    # Otherwise return None
-    def find(self, list, the_node):
-        for node in list:
-            if node == the_node:
-                break
-            else:
-                node = None
-        return node
-
     def ida_star(self, node_start):
 
-        # Frontier is a priority queue since cost matters
-        frontier = PriorityQueue()
-
         # Insert initial node at frontier
-        frontier.insert(node_start, self.evaluation_function(node_start))
+        self.frontier.insert(node_start, self.evaluation_function(node_start))
 
-        # Number of visited nodes
-        visited_nodes = 0
-
-        while not frontier.empty():
+        while not self.frontier.empty():
 
             # Pop node with the lowest cost from frontier,
-            node_current = frontier.pop()
+            node_current = self.frontier.pop()
 
             # Set new evaluation limit for algorithm
             limit = self.evaluation_function(node_current)
 
-            # popped node = visited node
-            visited_nodes += 1
-
-            if self.ida_star_search(node=node_current, frontier=frontier, limit=limit):
+            if self.ida_star_search(node=node_current, limit=limit):
                 f = open("output.txt", "a")
                 f.write("IDA*:\n")
                 f.write("\tVisited Nodes Number: " + str(len(self.visited_nodes)) + "\n")
                 f.write("\tPath: " + str(self.convert_node_path_to_string(self.get_node_path(node_current))) + "\n")
-                f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_current)) + "\n")
+                f.write("\tHeuristic Cost: " + str(self.heuristic_function(node_start)) + "\n")
                 f.write("\tEstimated Cost: " + str(self.cost_function(node_current)) + "\n")
                 f.close()
                 return True
@@ -278,7 +253,7 @@ class SequentialSearch(SearchBaseClass, ABC):
         return False
 
     # Iterative deepening search algorithm, will return True only if goal node is found
-    def ida_star_search(self, node, frontier, limit):
+    def ida_star_search(self, node, limit):
         for successor in node.get_successors():
             # If goal reached return true to end search
             if self.goal_reached(successor, node):
@@ -295,15 +270,14 @@ class SequentialSearch(SearchBaseClass, ABC):
 
             # If child's evaluation surpasses the current limit, insert child at frontier
             if child_eval > limit:
-                frontier.insert(child, child_eval)
+                self.frontier.insert(child, child_eval)
             # Else, if child's evaluation is within the limit, continue iterative deepening search and return result
             else:
-                if self.ida_star_search(child, frontier, limit):
+                if self.ida_star_search(child, limit):
                     return True
 
-        # In case recursive search does
+        # In case recursive search does not find goal, return to restart search with new limit
         return False
-
 
     def execute_search(self, time_pause) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
