@@ -194,9 +194,11 @@ class SequentialSearch(SearchBaseClass, ABC):
         distance_y = abs(node_center[1] - goal_node[1])
 
         # Manhattan Distance
-        # distance = distance_x + distance_y
-
-        distance = math.sqrt((distance_x**2) + (distance_y**2))
+        if self.heuristic == 1:
+            distance = distance_x + distance_y
+        # Euclidean distance
+        else:
+            distance = math.sqrt((distance_x**2) + (distance_y**2))
 
         return distance
 
@@ -322,8 +324,9 @@ class SequentialSearch(SearchBaseClass, ABC):
         print("Search Failed!")
         return False
 
-    def execute_search(self, time_pause, weight) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
+    def execute_search(self, time_pause, weight, heuristic) -> Tuple[Union[None, List[List[State]]], Union[None, List[MotionPrimitive]], Any]:
         node_initial = self.initialize_search(time_pause=time_pause)
+        self.heuristic = heuristic
 
         return self.a_star(node_start= node_initial, weight= weight)
 

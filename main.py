@@ -21,17 +21,17 @@ from SMP.motion_planner.plot_config import StudentScriptPlotConfig
 
 def main():
     weights = {
-        0: 1,
-        # 1: 1.3,
-        # 2: 1.5,
-        # 3: 2,
-        # 4: 2.5,
+        0: 1.1,
+        1: 1.2,
+        2: 1.5,
+        3: 2,
+        4: 2.5
     }
 
     scenarios = { 
         0: ('Scenarios/scenario1.xml'),
-        # 1: ('Scenarios/scenario2.xml'),
-        # 2: ('Scenarios/scenario3.xml')
+        1: ('Scenarios/scenario2.xml'),
+        2: ('Scenarios/scenario3.xml')
     }
     
     for path_scenario in scenarios.values():
@@ -67,13 +67,20 @@ def main():
             planner = class_planner(scenario=scenario, planning_problem=planning_problem,
                                     automaton=automaton, plot_config=config_plot)
 
+            # heuristic
+            # 0 or defaults: Euclidean heuristic
+            # 1: Manhattan heuristic
+            # Comment execute_search line to check only one heuristic
+
             # start search
             print(name_planner + " started..")
             if name_planner == "A* Search":
                 for w in weights.values():
-                    found_path = planner.execute_search(time_pause=0.01, weight=w)
+                    found_path = planner.execute_search(time_pause=0.01, weight=w, heuristic=0)
+                    found_path = planner.execute_search(time_pause=0.01, weight=w, heuristic=1)
             else:
-                found_path = planner.execute_search(time_pause=0.01)
+                found_path = planner.execute_search(time_pause=0.01, heuristic=0)
+                found_path = planner.execute_search(time_pause=0.01, heuristic=1)
 
     print('Done')
 
