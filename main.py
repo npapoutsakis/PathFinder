@@ -70,17 +70,15 @@ def main():
             # heuristic
             # 0 or defaults: Euclidean heuristic
             # 1: Manhattan heuristic
-            # Comment execute_search line to check only one heuristic
+            # Change heuristic value to 1 to check manhattan heuristic
 
             # start search
             print(name_planner + " started..")
             if name_planner == "A* Search":
                 for w in weights.values():
                     found_path = planner.execute_search(time_pause=0.01, weight=w, heuristic=0)
-                    found_path = planner.execute_search(time_pause=0.01, weight=w, heuristic=1)
             else:
                 found_path = planner.execute_search(time_pause=0.01, heuristic=0)
-                found_path = planner.execute_search(time_pause=0.01, heuristic=1)
 
     print('Done')
 
