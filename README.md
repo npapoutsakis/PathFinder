@@ -1,5 +1,5 @@
-## Optimal Path Finding
-The project was implemented in the context of the course "Artificial Intelligence (AI)" at the Technical University of Crete
+# Optimal Path Finding
+## The project was implemented in the context of the course "Artificial Intelligence (AI)" at the Technical University of Crete
 
 This program solves the problem of finding an optimal path for a vehicle to travel from its initial position to a final destination while avoiding obstacles and staying within the road boundaries.
 
